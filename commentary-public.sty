@@ -1,0 +1,12 @@
+%------------------------------------------------------------------------------- 
+% Commentary
+%------------------------------------------------------------------------------- 
+
+% Hide large blocks of text
+\newcommand{\eat}[1]{}
+
+% Highlight reminders
+% \newcommand{\reminder}[2]{{\small\em [[[{#1: #2}]]]}}
+% \newcommand{\reminder}[3]{{\setul{0.7ex}{0.2ex} \setulcolor{#1} \small\em [[[\ul{#2: #3}]]]}}
+\newcommand\coloruline[1]{\bgroup\markoverwith{\textcolor{#1}{\rule[-0.5ex]{2pt}{0.4pt}}}\ULon}
+\newcommand\reminder[3]{ {\small\em \coloruline{#1}{#2: #3}} }
