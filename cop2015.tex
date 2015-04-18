@@ -107,7 +107,7 @@ morekeywords={self, proceed}
 % the body of your article BEFORE References or any Appendices.
 
 \CopyrightYear{2015}
-\conferenceinfo{ECOOP}{'2015 Prague, Czech Republic}
+\conferenceinfo{COP}{'2015 Prague, Czech Republic}
 \numberofauthors{3} %  in this sample file, there are a *total*
 % of EIGHT authors. SIX appear on the 'first-page' (for formatting
 % reasons) and the remaining two appear in the \additionalauthors section.
@@ -401,7 +401,7 @@ As a benchmark, we are rendering a simplified version of the GhostScript Tiger (
     \label{fig:gs_tiger}
 \end{figure}
 
-Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where subsequent path objects have the control point layer activated and deactivated alternately. If method caching is enabled, the class-wide case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-wide inlining are already fast without caches. The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
+Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop\footnote{Benchmarks were run on a MacBook Pro with an i7-4558U CPU and 16~GB RAM, using Chrome 41.0.2272.118 (64-bit).}. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where subsequent path objects have the control point layer activated and deactivated alternately. If method caching is enabled, the class-wide case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-wide inlining are already fast without caches. The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
 
 \begin{figure}[t]
     \subfloat[Average frame rendering runtime (excluding first frame).]{\includegraphics[width=\columnwidth]{plot_bench_frames.pdf}} \\
@@ -411,8 +411,8 @@ Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 100
     \label{fig:rendering_runtime}
 \end{figure}
 
-Figure~\ref{fig:activation} shows the average runtime in milliseconds for activating and immediately deactivating a layer again. Activating a layer for an object is slow, because ContextAmber stores layer activation statements in a custom data structure consisting of two stacks: one stack for activations, one stack for deactivations. This is not necessary for global layer activation, because it has the lowest precedence: it is sufficient to store one list of currently
-activated layers. Instance-wide method inlining is slower than class-wide method inlining because ContextAmber deletes inlined methods (object) or recomputes the global layer composition signature (global) instead of marking the object dirty or increasing a version number, respectively.
+Figure~\ref{fig:activation} shows the average runtime for activating and immediately deactivating a layer again. Activating a layer for an object is slow, because ContextAmber stores layer activation statements in a custom data structure consisting of two stacks: one stack for activations, one stack for deactivations. This is not necessary for global layer activation, because it has the lowest precedence: it is sufficient to store one list of currently
+activated layers. Instance-wide inlining is slower than class-wide inlining because ContextAmber deletes inlined methods (object) or recomputes the global layer composition signature (global) instead of marking the object dirty or increasing a version number, respectively.
 
 \begin{figure}[t]
     \includegraphics[width=\columnwidth]{activation_ms.pdf}
@@ -428,7 +428,7 @@ ContextS is a COP implementation for Squeak~\cite{Hirschfeld:2007:ICP:1462618.14
 ContextL is a performance-efficient COP implementation for CLOS. Layers are internally represented by classes and layer compositions are cached classes that inherit from (multiple) layer classes: the topmost layer class and a layer composition class for the rest of the layer composition, where the former one takes precendence over the latter one~\cite{Costanza:2006:ELA:2111746.2111753}.
 
 \section{Future Work}
-The ideas presented in this work are based entirely on metaprogramming. Changing the language interpreter or virtual machine, however, allows for a variety of different implementations. Future work might focus on making polymorphic inline caches~\cite{Holzle:1991:ODO:646149.679193} aware of layer compositions: the invoked method could be determined based on the polymorphic type of the receiver and the layer composition signature of the receiver.
+The ideas presented in this work are based entirely on metaprogramming. Changing the language interpreter or virtual machine, however, allows for a variety of different implementations. Future work might focus on making polymorphic inline caches~\cite{Holzle:1991:ODO:646149.679193} aware of layer compositions: the invoked method could be determined based on the polymorphic type of the receiver and its layer composition signature.
 
 Another optimization could make systems, that do already perform aggressive method inlining, aware of layer compositions and \texttt{proceed} calls. Basically, \texttt{proceed} calls could be treated as a special form of method calls with a different method lookup procedure in the interpreter. Together with special guard clauses, a \texttt{proceed} call could look as ordinary to the inliner as any other method call. Partial Evaluation in Truffle~\cite{Wurthinger:2013:OVR:2509578.2509581} is an example of a very aggressive form of method inlining that could be made aware of layer compositions: it continues inlining methods until it encounters a statement that tells it to stop inlining.
 
