@@ -48,7 +48,7 @@ ax.set_xticklabels( ('no layers', 'control point layer', 'control point layer (m
 ax2.set_yticks(ax2.get_yticks()[:-1])
 ax.set_yticks(ax.get_yticks()[1:])
 
-ax.legend( (rectsNone[0], rectsClassCached[0], rectsClassUncached[0], rectsInstanceCached[0], rectsInstanceUncached[0]), ('without ContextAmber', 'class-wide (cached)', 'class-wide (uncached)', 'instance-wide (cached)', 'instance-wide (uncached)') , loc=2)
+ax.legend( (rectsNone[0], rectsClassCached[0], rectsClassUncached[0], rectsInstanceCached[0], rectsInstanceUncached[0]), ('without ContextAmber', 'class-specific (cached)', 'class-specific (uncached)', 'instance-specific (cached)', 'instance-specific (uncached)') , loc=2)
 
 def autolabel(rects):
     # attach some text labels

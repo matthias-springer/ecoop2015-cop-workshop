@@ -186,7 +186,7 @@ We present ContextAmber, a framework for context-oriented programming, in Amber 
 \keywords{Context-oriented programming, partial method inlining, inlined layered method invalidation} % NOT required for Proceedings
 
 \section{Introduction}
-Context-oriented programming~\cite{hirschfeld2008context} is a way to modularize crosscutting concerns that can dynamically adapt their runtime behavior: layers can be activated and deactivated at runtime, making it hard to predict the sequence and nesting of invoked partial methods for a given layered method at compile time. Performance studies have shown that in static aspect-oriented programming, where aspect weaving is done at compile time, the runtime overhead can be as small as 1\%~\cite{Colyer:2003:UAC:949344.949440}, whereas in context-oriented programming, the performance decrease of layer-aware method dispatch is typically more than 75\%~\cite{Appeltauer:2009:CCP:1562112.1562118}.
+Layer-based context-oriented programming~\cite{hirschfeld2008context} is a way to modularize crosscutting concerns that can dynamically adapt their runtime behavior: layers can be activated and deactivated at runtime, making it hard to predict the sequence and nesting of invoked partial methods for a given layered method at compile time. Performance studies have shown that in static aspect-oriented programming, where aspect weaving is done at compile time, the runtime overhead can be as small as 1\%~\cite{Colyer:2003:UAC:949344.949440}, whereas in context-oriented programming, the performance decrease of layer-aware method dispatch is typically more than 75\%~\cite{Appeltauer:2009:CCP:1562112.1562118}.
 
 Upon invocation of a layered method, a COP implementation without any further optimizations has to perform the following steps.
 \begin{compact_enum}
@@ -198,7 +198,7 @@ Upon invocation of a layered method, a COP implementation without any further op
 In this paper, we present optimizations that speed up the execution of COP applications: our implementation, ContextAmber, avoids unnecessary computations of layer compositions and reduces the number of method invocations by inlining partial methods. It is no longer necessary to find the next corresponding partial method since only a single fully inlined method is invoked. Note, that finding the next partial method can be expensive in other implementations, because it
 requires going through the collection of active layers and checking whether a layer has a method for the receiver's class or one of the receiver's super classes. Our main contribution is an evaluation of techniques for invalidating inlined methods. 
 
-ContextAmber is implemented using metaprogramming facilities of the guest language and does not require changes to the underlying interpreter or virtual machine. Most findings of this paper can be applied to all programming languages that support on-the-fly code generation like Ruby, Smalltalk, or JavaScript.
+ContextAmber is implemented using JavaScript/Smalltalk metaprogramming facilities and does not require changes to the underlying JavaScript interpreter or virtual machine. Most findings of this paper can be applied to all programming languages that support on-the-fly code generation like Ruby, Smalltalk, or JavaScript.
 
 In the remainder of this paper, we discuss vector graphics rendering debugging which serves as a running example in this paper (Section~\ref{sec:vector}). In Sections~\ref{sec:impl}-\ref{sec:invalidation}, we present the key ideas of our implementation, along with performance measurements in Section~\ref{sec:bench}.
 
@@ -231,7 +231,8 @@ canvas draw: path.
 \label{fig:source_athens}
 \end{figure}
 
-Figure~\ref{fig:athens_sequence} shows how Athens draws paths. \texttt{AthensCanvas} is the entry point for all drawings and has methods for performing primitive operations such as moving the pen somewhere on the canvas. The \texttt{draw:} method can be used to draw complex shapes such as paths. It delegates the drawing to that path object which acts as a proxy here. A path contains a list of segments that is created when the path is created. During drawing, these segements are \emph{replayed} using double dispatch. In our example, the path object simply forwards these command to the canvas object\footnote{It is possible to extend Athens for different drawing backends, requiring a different interface, in which case the path object is an adapter.}.
+Figure~\ref{fig:athens_sequence} shows how Athens draws paths. \texttt{AthensCanvas} is the entry point for all drawings and has methods for performing primitive operations such as moving the pen somewhere on the canvas. The \texttt{draw:} method can be used to draw complex shapes such as paths. It delegates the drawing to that path object which acts as a proxy here. A path contains a list of segments that is created when the path is created. During drawing, these segments are
+\emph{replayed} using double dispatch. In our example, the path object simply forwards these commands to the canvas object\footnote{It is possible to extend Athens for different drawing backends, requiring a different interface, in which case the path object is an adapter.}.
 \begin{figure}[!htp]
     \includegraphics[width=\columnwidth]{athens_sequence.pdf}
     \caption{Drawing paths in Athens.}
@@ -272,7 +273,7 @@ When a Smalltalk method is compiled, its source code is first converted into an 
 ContextAmber performs method inlining on the AST level, making it possible to use the step-through debugger, which operates on the AST.
 
 \paragraph{Layer Activation}
-In ContextAmber, layers can be activated globally, within a certain scope, and for a single objects. Since JavaScript is a single-threaded programming language, scoped layer activation can be treated like global layer activation, as long as the effect is reversed once the control flow leaves the scope. As will be described in Section~\ref{sec:partial_method_inlining}, object-wise layer activation has far-reaching effects on method inlining, since different instances of the same class can have different layer compositions.
+In ContextAmber, layers can be activated globally, within a certain scope, and for a single object. Since JavaScript is a single-threaded programming language, scoped layer activation can be treated like global layer activation\footnote{Amber Smalltalk does currently not support processes.}, as long as the effect is reversed once the control flow leaves the scope. As will be described in Section~\ref{sec:partial_method_inlining}, object-wise layer activation has far-reaching effects on method inlining, since different instances of the same class can have different layer compositions.
 
 \begin{figure}[!htp]
     \includegraphics[width=\columnwidth]{layer_composition_calculation.pdf}
@@ -281,7 +282,7 @@ In ContextAmber, layers can be activated globally, within a certain scope, and f
 \end{figure}
 
 %\todo{Is there enough information given about layer composition computation?}
-Figure~\ref{fig:layer_composition_calculation} shows how ContextAmber calculates an object's layer composition. Object-wise layer activation has a higher precedence than scoped layer activation and scoped layer activation has a higher precedence than global layer activation. In the rest of this work, we do not distinguish between global and scoped layer activation and refer to the global/scoped layer composition as the \emph{Global Layer Composition} (italic text in Figure~\ref{fig:layer_composition_calculation}).
+Figure~\ref{fig:layer_composition_calculation} shows how ContextAmber calculates an object's layer composition. Object-wise layer activation has a higher precedence than scoped layer activation, which has a higher precedence than global layer activation. In the rest of this work, we do not distinguish between global and scoped layer activation and refer to the global/scoped layer composition as the \emph{Global Layer Composition} (italic text in Figure~\ref{fig:layer_composition_calculation}).
 
 \section{Partial Method Inlining}
 \label{sec:inlining}
@@ -291,21 +292,21 @@ In this section, we discuss two variants for inlining partial methods and their 
 \subsection{Method Inlining}
 ContextAmber hooks into the Amber compilation process and inlines methods on the AST level. A visitor looks for \texttt{proceed} sends and replaces them with a \texttt{value} send to a block closure containing the sequence of instructions of the next partial method in the current layer composition. Return statements in inlined methods must be modified, such that they don't cause the entire method to end but just return from the block closure (local return). 
 
-\paragraph{Class-wide Method Inlining}
+\paragraph{Class-specific Method Inlining}
 Inlined methods are stored on the prototype object for the class (like ordinary instance methods), i.e., the prototype that is shared by all instances of a class. This makes object-wise layer activation difficult, because ContextAmber might have to execute different inlined methods, depending on the object's layer composition.
 
 %idea: class has multiple methods for different compositions
 
-\paragraph{Instance-wide Method Inlining}
-Inlined methods are stored as attributes on the object itself, allowing objects with different layer compositions to have their own inlined methods. There is no concept of classes in JavaScript and every object can have its own methods. Some programming languages have similar concepts: for example it is possible to define object-specific methods in Ruby using singleton classes (eigenclasses). In some other programming languages, instance-wide method inlining can be harder to
+\paragraph{Instance-specific Method Inlining}
+Inlined methods are stored as attributes on the object itself, allowing objects with different layer compositions to have their own inlined methods. This is usually not supported by Smalltalk, but, in JavaScript, every object can have its own methods. Some programming languages have similar concepts: for example, Ruby supports object-specific methods using singleton classes (eigenclasses). In some other programming languages, instance-specific method inlining can be harder to
 implement using only metaprogramming facilities: an implementation would have to create a subclass containing the inlined method and change the object's class to that subclass. Alternatively, layered methods could be wrappers delegating calls to composition-specific item description objects~\cite{Coad:1992:OP:130994.131006}, or look up methods in a separate dictionary.
 
-Instance-wide inlining can be faster than class-wide inlining because no new methods have to be installed when a method is called on objects with different layer compositions alternately. However, having too many different layer compositions can affect caching and VM optimizations and slow down the system. Future versions of ContextAmber might automatically decide whether to use class-wide or instance-wide inlining and adapt that decision during runtime if necessary. At the moment, it is the programmer's decision.
+Instance-specific inlining can be faster than class-specific inlining because no new methods have to be installed when a method is called on objects with different layer compositions alternately. However, having too many different layer compositions can affect caching and VM optimizations and slow down the system. Future versions of ContextAmber might automatically decide whether to use class-specific or instance-specific inlining and adapt that decision during runtime if necessary. Currently, the programmer has to decide.
 
 \subsection{Method Cache}
-ContextAmber maintains a fixed-size method cache mapping layer compositions to inlined methods. Whenever an inlined method is requested, it is first looked up in the method cache. If an inlined method was not found in the method cache, it is generated and added to the cache. Old inlined methods are evicted from the cache in a FIFO manner. 
+ContextAmber maintains a fixed-size method cache mapping layer compositions to inlined methods. Whenever an inlined method is requested, it is first looked up in the method cache. If an inlined method was not found in the cache, it is generated and added to the cache. Old inlined methods are evicted from the cache in a FIFO manner. 
 
-Method caches make instance-wide method inlining feasible even with a large number of objects, because the same inlined method can be shared by multiple objects.
+Method caches make instance-specific method inlining feasible even with a large number of objects, because the same inlined method can be shared by multiple objects.
 
 %TODO: effects on JIT compiler
 
@@ -316,7 +317,7 @@ Method caches make instance-wide method inlining feasible even with a large numb
 \begin{figure*}[!htp]
 \centering
 \begin{tabular}{c|ccccc}
- & \specialcell{instance- \\ wide} & \specialcell{class- \\ wide} & \specialcell{instance \\ space overhead} & \specialcell{update header \\ runtime overhead\footnotemark} & \specialcell{composition change \\ runtime overhead} \\
+ & \specialcell{instance- \\ specific} & \specialcell{class- \\ specific} & \specialcell{instance \\ space overhead} & \specialcell{update header \\ runtime overhead\footnotemark} & \specialcell{composition change \\ runtime overhead} \\
 \hline
 Comparing signatures & \ding{51} & \ding{51} & no overhead & \specialcell{compute composition \\ compare signature} & no overhead \\ \hline
 Caching signatures & \ding{51} & \ding{51} & \specialcell{boolean field \\ integer field \\ string field} & \specialcell{compare dirty bit \\ compare version \\ (compare signature)} & \specialcell{object: set dirty bit \\ global: increment version} \\ \hline
@@ -324,7 +325,7 @@ Caching signatures & \ding{51} & \ding{51} & \specialcell{boolean field \\ integ
 \specialcell{Method generation \\ on composition change} & \ding{51} & \ding{55} & no overhead & no overhead & \specialcell{compute composition \\ generate mult. methods}
 \end{tabular}
 
-When using instance-wide method inlining, an additional method object is stored per instance\footnotemark.
+When using instance-specific method inlining, an additional method object is stored per instance\footnotemark.
 \caption{Comparison of techniques for layered method invalidation and inlining.}
 \label{fig:invalidation_comparison}
 \end{figure*}
@@ -336,7 +337,7 @@ The following list gives an overview of the events that can cause an inlined met
 
 \begin{compact_item}
     \item \emph{Adding/removing a Partial Method.} If a partial method is added or removed for a layer that is currently active, ContextAmber might have to add or remove that partial method to corresponding inlined layered methods.
-    \item \emph{Calling a Method on a Different Object.} With object-wise layer activation, two different instances of the same class can have different layer compositions and, therefore, different inlined layered methods. An a layered method that is inlined for the entire class has to invalidate itself when it is invoked on an object having a different layer composition than the one it was created for.
+    \item \emph{Calling a Method on a Different Object.} With object-wise layer activation, two different instances of the same class can have different layer compositions and, therefore, different inlined layered methods. A layered method that is inlined for the entire class has to invalidate itself when it is invoked on an object having a different layer composition than the one it was created for.
     \item \emph{Layer Composition Change.} Inlined methods can be become outdated when a layer is activated or deactivated.
 \end{compact_item}
 
@@ -370,10 +371,10 @@ The update header in Figure~\ref{fig:update_unoptimized} has to compute the curr
 
 In total, ContextAmber stores three additional fields on every object with a layered method\footnote{These fields are stored as JavaScript object attributes that are not visible from the Smalltalk side and do not interfere with Smalltalk code.}: the cached layer composition signature (string), the version number (integer) of the object's class at the point of time when the layer signature was cached, and a dirty bit (boolean). These three fields are refreshed whenever the composition signature is recomputed.
 
-Note, that composition signature is both hard-coded in the method source code and stored as a field on every object having layered methods. These two values are being compared in the update header. ContextAmber uses this technique for class-wide method inlining.
+Note, that composition signature is both hard-coded in the method source code and stored as a field on every object having layered methods. These two values are being compared in the update header. ContextAmber uses this technique for class-specific method inlining.
 
 \paragraph{Detecting Composition Changes without Signatures}
-The update header in Figure~\ref{fig:update_header_caching} has to compare composition signatures because a different inlined method might have to be installed even if the there are no changes to the layer composition: if a class-wide inlined method is invoked on objects with different layer compositions. Instance-wide inlined method do not have to be invalidated in that case, because every object has its own method (Figure~\ref{fig:update_header_detecting}).
+The update header in Figure~\ref{fig:update_header_caching} has to compare composition signatures because a different inlined method might have to be installed even if there are no changes to the layer composition: if a class-specific inlined method is invoked on objects with different layer compositions. Instance-specific inlined method do not have to be invalidated in that case, because every object has its own method (Figure~\ref{fig:update_header_detecting}).
 
 \begin{figure}[!htp]
     \centering
@@ -386,7 +387,7 @@ If the layer composition is changed for an object, ContextAmber simply removes a
 
 If the layer composition is changed globally, ContextAmber updates the global layer composition signature for all affected method objects stored in the class' method dictionary, i.e., it updates an instance variable on all affected \texttt{CompiledMethod} objects\footnote{Only layers
 having a corresponding partial method are part of that signature.}. The update header has the global layer composition signature at the time of inlining hard-coded as a string and compares it with the signature stored in the class' method object. Note, that invariant global layer composition change sequences, i.e., sequences of global layer composition changes that do not change the global layer composition (e.g., activating and deactivating a layer globally), do not invalidate a method, because the
-global layer composition signature stays the same. ContextAmber uses this technique for instance-wide method inlining.
+global layer composition signature stays the same. ContextAmber uses this technique for instance-specific method inlining.
 
 \section{Benchmarks}
 \label{sec:bench}
@@ -401,22 +402,23 @@ As a benchmark, we are rendering a simplified version of the GhostScript Tiger (
     \label{fig:gs_tiger}
 \end{figure}
 
-Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop\footnote{Benchmarks were run on a MacBook Pro with an i7-4558U CPU and 16~GB RAM, using Chrome 41.0.2272.118 (64-bit).}. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where subsequent path objects have the control point layer activated and deactivated alternately. If method caching is enabled, the class-wide case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-wide inlining are already fast without caches. The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
+Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop\footnote{Benchmarks were run on a MacBook Pro with an i7-4558U CPU and 16~GB RAM, using Chrome 41.0.2272.118 (64-bit).}. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where the control point layer is activated on every other path object. If method caching is enabled, the class-specific case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-specific inlining are already fast without caches. The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
 
 \begin{figure}[t]
-    \subfloat[Average frame rendering runtime (excluding first frame).]{\includegraphics[width=\columnwidth]{plot_bench_frames.pdf}} \\
-    \subfloat[First frame rendering runtime.]{\includegraphics[width=\columnwidth]{plot_bench_first_frame.pdf}}
+    \centering
+    \subfloat[Avg. frame rendering runtime (excluding first frame).]{\includegraphics[width=0.98\columnwidth]{plot_bench_frames.pdf}} \\
+    \subfloat[First frame rendering runtime.]{\includegraphics[width=0.98\columnwidth]{plot_bench_first_frame.pdf}}
 %    \includegraphics[width=\columnwidth]{plot_bench_frames.pdf}
     \caption{Tiger rendering runtime in milliseconds.}
     \label{fig:rendering_runtime}
 \end{figure}
 
 Figure~\ref{fig:activation} shows the average runtime for activating and immediately deactivating a layer again. Activating a layer for an object is slow, because ContextAmber stores layer activation statements in a custom data structure consisting of two stacks: one stack for activations, one stack for deactivations. This is not necessary for global layer activation, because it has the lowest precedence: it is sufficient to store one list of currently
-activated layers. Instance-wide inlining is slower than class-wide inlining because ContextAmber deletes inlined methods (object) or recomputes the global layer composition signature (global) instead of marking the object dirty or increasing a version number, respectively.
+activated layers. Instance-specific inlining is slower than class-specific inlining because ContextAmber deletes inlined methods (object) or recomputes the global layer composition signature (global) instead of marking the object dirty or increasing a version number, respectively.
 
 \begin{figure}[t]
     \includegraphics[width=\columnwidth]{activation_ms.pdf}
-    \caption{Runtime for activation and deactivating a layer in milliseconds.}
+    \caption{Runtime for activating/deactivating a layer.}
     \label{fig:activation}
 \end{figure}
 

@@ -124,7 +124,7 @@
          x="170"
          y="692.36218"
          id="tspan3007"
-         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola">composition signature</tspan><tspan
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola"> signature</tspan><tspan
          sodipodi:role="line"
          x="170"
          y="732.36218"
@@ -141,7 +141,7 @@
          y="498.36218"
          x="564.4375"
          sodipodi:role="line"
-         id="tspan3019">compute composition </tspan><tspan
+         id="tspan3019">compute layer comp. </tspan><tspan
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola"
          y="538.36218"
          x="560"
@@ -172,9 +172,9 @@
     <rect
        style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect3027"
-       width="340"
+       width="250"
        height="80"
-       x="0"
+       x="40"
        y="662.36218" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
@@ -476,7 +476,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path6560"
-       d="m 350,702.36218 80,0"
+       d="m 300,702.36218 130,0"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
