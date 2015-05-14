@@ -356,7 +356,7 @@ Every layer has a unique integer identifier. A layer composition can be uniquely
 
 When an inlined layered method is invoked, the update header computes the receiver's layer composition and its layer composition signature and compares it with the layer composition signature at the point of time when the inlined method was generated. That value is hard-coded as a string literal in the update header's source code. If the signature values differ, then a new inlined method is created, installed, and called. A method cache is used to cache inlined methods and avoid unnecessary code generation.
 
-\footnotetext[5]{We consider the average case where the layer composition was not changed (or invariant layer composition change sequences).}
+\footnotetext[6]{We consider the average case where the layer composition was not changed (or invariant layer composition change sequences).}
 \footnotetext{Method caches make it easy to share the same method object among multiple instances.}
 
 \paragraph{Caching Composition Signatures}
