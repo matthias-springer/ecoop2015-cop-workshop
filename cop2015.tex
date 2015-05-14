@@ -287,10 +287,10 @@ Figure~\ref{fig:layer_composition_calculation} shows how ContextAmber calculates
 \section{Partial Method Inlining}
 \label{sec:inlining}
 \label{sec:partial_method_inlining}
-In this section, we discuss two variants for inlining partial methods and their implications. Both variants are implemented in ContextAmber.
+In this section, we discuss ContextAmber's two variants for inlining partial methods and their implications.
 
 \subsection{Method Inlining}
-ContextAmber hooks into the Amber compilation process and inlines methods on the AST level. A visitor looks for \texttt{proceed} sends and replaces them with a \texttt{value} send to a block closure containing the sequence of instructions of the next partial method in the current layer composition. Return statements in inlined methods must be modified, such that they don't cause the entire method to end but just return from the block closure (local return). 
+ContextAmber hooks into the Amber compilation process and inlines methods on the AST level. A visitor looks for \texttt{proceed} sends and replaces them with a \texttt{value} send to a block closure containing the sequence of instructions of the next partial method in the current layer composition. This approach takes care of name clashes of temporary variables, as opposed to just copying the instructions without a block closure. Return statements in inlined methods must be modified, such that they don't cause the entire method to end but just return from the block closure (local return). 
 
 \paragraph{Class-specific Method Inlining}
 Inlined methods are stored on the prototype object for the class (like ordinary instance methods), i.e., the prototype that is shared by all instances of a class. This makes object-wise layer activation difficult, because ContextAmber might have to execute different inlined methods, depending on the object's layer composition.
@@ -395,14 +395,14 @@ As a benchmark, we are rendering a simplified version of the GhostScript Tiger (
 
 \begin{figure}[t]
         \centering
-        \subfloat[Original tiger rendering without layers.]{\includegraphics[width=0.45\columnwidth]{tiger_original.pdf}}
+        \subfloat[Without layers.]{\includegraphics[width=0.45\columnwidth]{tiger_original.pdf}}
         \hfill
-        \subfloat[Tiger rendering with control point layer.]{\includegraphics[width=0.45\columnwidth]{tiger_control_resized.png}}
-    \caption{GhostScript Tiger vector graphics rendering with Athens.}
+        \subfloat[Control point layer.]{\includegraphics[width=0.45\columnwidth]{tiger_control_resized.png}}
+    \caption{GhostScript Tiger rendering with Athens.}
     \label{fig:gs_tiger}
 \end{figure}
 
-Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop\footnote{Benchmarks were run on a MacBook Pro with an i7-4558U CPU and 16~GB RAM, using Chrome 41.0.2272.118 (64-bit).}. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where the control point layer is active only on 50\% of the path objects (on every second one). If method caching is enabled, the class-specific case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-specific inlining are already fast without caches. The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
+Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 1000 times in a loop\footnote{Benchmarks were run on a MacBook Pro with an i7-4558U CPU and 16~GB RAM, using Chrome 41.0.2272.118 (64-bit). We used \url{git@github.com:matthias-springer/cop-ContextAmber.git} at commit \texttt{0006c8b997}.}. The runtime for the first frame is higher than the average runtime, because this is when an inlined method is created for the first time. The runtime increases if new methods have to be installed: \emph{control point layer (mixed)} denotes the case where the control point layer is active only on 50\% of the path objects (on every second one). If method caching is enabled, its class-specific case remains reasonably fast because inlined methods with and without the control point layer are cached; subsequent frame renderings with instance-specific inlining are already fast without caches, because no new methods have to be installed. However, rendering the first frame benefits from method caches even then, because only two methods are then generated and cached (with/without layer). The benchmarks in Figure~\ref{fig:rendering_runtime} do not change the layer composition during rendering. 
 
 \begin{figure}[t]
     \centering
@@ -413,7 +413,7 @@ Figure~\ref{fig:rendering_runtime} shows the runtime for rendering the tiger 100
     \label{fig:rendering_runtime}
 \end{figure}
 
-Figure~\ref{fig:activation} shows the average runtime for activating and immediately deactivating a layer again. Activating a layer for an object is slow, because ContextAmber stores layer activation statements in a custom data structure consisting of two stacks: one stack for activations, one stack for deactivations. This is not necessary for global layer activation, because it has the lowest precedence: it is sufficient to store one list of currently
+Figure~\ref{fig:activation} shows the average runtime for activating and immediately deactivating a layer again. Activating a layer object-wise is slow, because ContextAmber stores layer activation statements in a custom data structure consisting of two stacks: one stack for activations, one stack for deactivations. This is not necessary for global layer activation, because it has the lowest precedence: it is sufficient to store one list of currently
 activated layers. Instance-specific inlining is slower than class-specific inlining because ContextAmber deletes inlined methods (object) or recomputes the global layer composition signature (global) instead of marking the object dirty or increasing a version number, respectively.
 
 \begin{figure}[t]
@@ -423,7 +423,7 @@ activated layers. Instance-specific inlining is slower than class-specific inlin
 \end{figure}
 
 \section{Related Work}
-ContextJS is a COP implementation for JavaScript~\cite{Lincke:2011:OIC:1998661.1998804}. It relies solely on metaprogramming facilities. It is similar to ContextAmber in a sense that both run on JavaScript. It inlines \texttt{proceed} calls in the same way ContextAmber does, and adds an update header to the beginning of every inlined method checking the object's cached layer composition signature; caching is, however, not supported for object-wise layer activation because every object can provide its own method for computing the stack of activated layers in ContextJS~\cite{Krahn:2012:ELA:2223947.2223971}.
+ContextJS is a COP implementation for JavaScript~\cite{Lincke:2011:OIC:1998661.1998804}. It relies solely on metaprogramming facilities. It is similar to ContextAmber in a sense that both run on JavaScript. It inlines \texttt{proceed} calls in the same way ContextAmber does, and adds an update header to the beginning of every inlined method checking the object's cached layer composition signature; caching is, however, not supported for object-wise layer activation because every object can provide its own method for computing the stack of activated layers~\cite{Krahn:2012:ELA:2223947.2223971}.
 
 ContextS is a COP implementation for Squeak~\cite{Hirschfeld:2007:ICP:1462618.1462629}. Layers are represented by classes and their methods contain the name of the base class, the selector, and the partial method as a block closure in the source code. In ContextAmber, partial classes containing partial methods are associated with layer classes in a many-to-many relationship.
 
