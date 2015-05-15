@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1370.7"
+   width="1350.85"
    height="647.51996"
    id="svg2"
    version="1.1"
@@ -40,8 +40,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="623.06213"
-     inkscape:cy="305.33651"
+     inkscape:cx="516.69409"
+     inkscape:cy="305.33653"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -64,8 +64,8 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       originx="0.34999999px"
-       originy="-206.06402px" />
+       originx="-19.65px"
+       originy="-206.064px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -83,7 +83,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0.34999999,-198.7782)">
+     transform="translate(-19.65,-198.7782)">
     <text
        sodipodi:linespacing="125%"
        id="text2995"
@@ -134,19 +134,19 @@
        sodipodi:linespacing="125%"
        id="text3011"
        y="500.90619"
-       x="559.45599"
+       x="560.01599"
        style="font-size:32px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        xml:space="preserve"><tspan
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola"
          y="500.90619"
-         x="563.89349"
+         x="564.45349"
          sodipodi:role="line"
-         id="tspan3019">compute layer comp. </tspan><tspan
+         id="tspan3019">compute layer </tspan><tspan
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola"
          y="540.90619"
-         x="559.45599"
+         x="560.01599"
          sodipodi:role="line"
-         id="tspan6550">+ signature</tspan></text>
+         id="tspan6550">comp. + signature</tspan></text>
     <rect
        style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect3021"
@@ -164,9 +164,9 @@
     <rect
        style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect3025"
-       width="340"
+       width="280"
        height="80"
-       x="390"
+       x="420"
        y="472.36218"
        ry="0" />
     <rect
@@ -217,7 +217,7 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 300,512.36218 80,0"
+       d="m 300,512.36218 110,0"
        id="path4437"
        inkscape:connector-curvature="0" />
     <text
@@ -451,18 +451,18 @@
     <text
        xml:space="preserve"
        style="font-size:32px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="559.45599"
+       x="564.45599"
        y="690.92218"
        id="text6552"
        sodipodi:linespacing="125%"><tspan
          id="tspan6554"
          sodipodi:role="line"
-         x="563.89349"
+         x="568.89349"
          y="690.92218"
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola">compute layer </tspan><tspan
          id="tspan6556"
          sodipodi:role="line"
-         x="559.45599"
+         x="564.45599"
          y="730.92218"
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:TeX Gyre Schola;-inkscape-font-specification:TeX Gyre Schola">composition</tspan></text>
     <rect
@@ -470,7 +470,7 @@
        y="662.36218"
        x="440"
        height="80"
-       width="240"
+       width="250.00002"
        id="rect6558"
        style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-miterlimit:4;stroke-dasharray:none" />
     <path
@@ -479,12 +479,12 @@
        d="m 300,702.36218 130,0"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 690,702.36218 90,0"
+       style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 700,702.36218 80,0"
        id="path6562"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:4, 4;stroke-dashoffset:0"
+       style="fill:none;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0"
        d="m 420.35,443.58398 350,0 0,-190 600,0 0,310 -950,0 z"
        id="path6564"
        inkscape:connector-curvature="0"
