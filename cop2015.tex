@@ -106,8 +106,19 @@ morekeywords={self, proceed}
 % without further effort on your part as the last section in
 % the body of your article BEFORE References or any Appendices.
 
+\newfont{\mycrnotice}{ptmr8t at 7pt}
+\newfont{\myconfname}{ptmri8t at 7pt}
+\let\crnotice\mycrnotice%
+\let\confname\myconfname%
+
 \CopyrightYear{2015}
-\conferenceinfo{COP}{'2015 Prague, Czech Republic}
+\permission{Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.}
+\conferenceinfo{COP'15}{July 05 2015, Prague, Czech Republic. \\
+{\mycrnotice{Copyright is held by the owner/author(s). Publication rights 
+licensed to ACM.}}}
+\copyrightetc{ACM \the\acmcopyr}
+\crdata{978-1-4503-3654-3/15/07\ \ldots \$15.00. \href{http://dx.doi.org/10.1145/2786545.2786548}{http://dx.doi.org/10.1145/2786545.2786548}}
+
 \numberofauthors{3} %  in this sample file, there are a *total*
 % of EIGHT authors. SIX appear on the 'first-page' (for formatting
 % reasons) and the remaining two appear in the \additionalauthors section.
